@@ -1,6 +1,6 @@
- "use client";
+"use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Typewriter from 'typewriter-effect';
 import Loader from "../components/Loader";
@@ -36,9 +36,16 @@ export default function Home() {
     {
       title: "Taweret",
       desc: "A healthcare charity platform focused on pediatric oncology. I utilized Framer Motion to create empathetic, fluid transitions that streamline donor-patient transparency.",
-      stack: ["Next.js", "TypeScript", "Tailwind", "Framer Motion"],
+      stack: ["Next.js", "TypeScript", "Framer Motion"],
       github: "https://github.com/Ayomide-cmd",
       live: "https://taweret.vercel.app/"
+    },
+    {
+      title: "Cakely",
+      desc: "Full-stack e-commerce ordering system using the MERN-lite stack (React, Node.js, Express). Integrated Redux for advanced state management and deployed a cross-platform architecture using Render and Vercel. Solved complex deployment challenges involving CORS and environment-specific API routing.",
+      stack: ["Redux Toolkit", "Node JS", "CORS", "React Router"],
+      github: "https://github.com/Ayomide-cmd/cakely",
+      live: "https://cakely-amber.vercel.app"
     },
     {
       title: "Poppa Vitamins",
@@ -100,7 +107,7 @@ export default function Home() {
               </div>
             </section>
 
-            <section className="mb-32 relative">
+            <section id="what-i-do" className="mb-32 relative">
               <div className="relative inline-block mb-12">
                 <h2 className="text-6xl md:text-7xl font-handwriting text-[#f472b6] relative z-10">
                   What I Do
@@ -116,11 +123,15 @@ export default function Home() {
 
               <div className="max-w-4xl mb-20 relative">
                 <p className="text-xl md:text-2xl leading-relaxed text-gray-300 font-light relative z-10">
-                  I create experiences that go beyond just functionality through interactive 
-                  <span className="text-[#f472b6] font-bold"> animation</span>, 
-                  <span className="text-[#f472b6] font-bold"> motion</span>, and 
-                  <span className="text-[#f472b6] font-bold"> design</span>. Overlooked details such as smooth animations, dynamic interactions, and sleek transitions make a world of difference in user experience. I take plain, lifeless interfaces and turn them into experiences that feel 
-                  <span className="text-[#f472b6] font-bold italic"> alive.</span>
+                  My toolkit isn't built on layouts, but on
+                  <span className="text-[#f472b6] font-bold"> WebGL</span>, 
+                  <span className="text-[#f472b6] font-bold"> physics libraries</span>, and 
+                  <span className="text-[#f472b6] font-bold"> optimized frontend architecture</span>. 
+                  I take the abstract and make it interactive, focusing entirely on the mechnics of the digital experience. I write the code that transforms static environments into 
+                  <span className="text-[#f472b6] font-bold italic"> dynamic, tactile experiences</span>. <br></br>
+                  My work is a continuous bridge toward 
+                  <span className="text-[#f472b6] font-bold"> full-scale game development</span>, 
+                  where I apply these same principles of computational aesthetics and real-time interaction to build immersive, performant worlds from the ground up.
                 </p>
 
                 <svg className="absolute -bottom-2 right-0 w-48 h-8 text-[#f472b6]" viewBox="0 0 200 40">
@@ -244,9 +255,9 @@ export default function Home() {
                   { name: "TypeScript", icon: <Terminal size={24} /> },
                   { name: "Framer Motion", icon: <Zap size={24} /> },
                   { name: "GSAP", icon: <Box size={24} /> },
-                  { name: "Tailwind CSS", icon: <Layout size={24} /> },
-                  { name: "React", icon: <Cpu size={24} /> },
-                  { name: "Git", icon: <Github size={24} /> }
+                  { name: "CORS", icon: <Layout size={24} /> },
+                  { name: "React JS", icon: <Cpu size={24} /> },
+                  { name: "Git | Github", icon: <Github size={24} /> }
                 ].map((tech) => (
                   <div key={tech.name} className="bg-black p-8 flex flex-col items-center justify-center gap-4 group transition-colors min-h-40">
                     <div className="text-gray-500 group-hover:text-[#f472b6] transition-all transform group-hover:scale-110">
@@ -279,7 +290,7 @@ export default function Home() {
                 </div>
                 <div>
                   <h4 className="text-xs font-bold uppercase text-white">Terra Learning</h4>
-                  <p className="text-[10px] text-gray-500 uppercase mt-1">Frontend Web Dev (React JS)</p>
+                  <p className="text-[10px] text-gray-500 uppercase mt-1">Frontend Web Development (React JS)</p>
                 </div>
               </BentoCard>
 
@@ -338,10 +349,46 @@ export default function Home() {
                 </div>
               </div>
             </section>
+            <ScrollIndicator />
           </motion.main>
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+function ScrollIndicator() {
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const threshold = 100;
+      if (window.scrollY > threshold) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed bottom-12 right-12 z-50 pointer-events-none"
+        >
+          <span className="text-[#f472b6] text-[10px] font-bold tracking-[0.4em] uppercase animate-pulse">
+            Keep Scrolling 
+          </span>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
