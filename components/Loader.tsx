@@ -23,10 +23,10 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
   return (
     <motion.div
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black z-[200] flex flex-col items-center justify-center p-4"
+      className="fixed inset-0 bg-black z-200 flex flex-col items-center justify-center p-4"
     >
       <div className="w-full max-w-sm">
-        <div className="flex justify-between mb-4 font-mono text-[10px] tracking-[0.3em] text-[#f472b6]">
+        <div className="flex justify-between mb-4 font-mono text-[15px] tracking-[0.3em] text-[#f472b6]">
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -36,7 +36,7 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
           <span>{progress}%</span>
         </div>
         
-        <div className="h-[2px] w-full bg-[#1a1a1a] overflow-hidden relative">
+        <div className="h-05 w-full bg-[#1a1a1a] overflow-hidden relative">
           <motion.div
             className="absolute top-0 left-0 h-full bg-[#f472b6]"
             initial={{ width: "0%" }}

@@ -123,12 +123,13 @@ export default function Home() {
 
               <div className="max-w-4xl mb-20 relative">
                 <p className="text-xl md:text-2xl leading-relaxed text-gray-300 font-light relative z-10">
-                  My toolkit isn't built on layouts, but on
+                 My toolkit isn't built on layouts, but on 
                   <span className="text-[#f472b6] font-bold"> WebGL</span>, 
                   <span className="text-[#f472b6] font-bold"> physics libraries</span>, and 
                   <span className="text-[#f472b6] font-bold"> optimized frontend architecture</span>. 
-                  I take the abstract and make it interactive, focusing entirely on the mechnics of the digital experience. I write the code that transforms static environments into 
-                  <span className="text-[#f472b6] font-bold italic"> dynamic, tactile experiences</span>. <br></br>
+                  I enjoy writing code that transforms static pages into 
+                  <span className="text-[#f472b6] font-bold italic"> dynamic, tactile experiences</span>. 
+                  <br /><br />
                   My work is a continuous bridge toward 
                   <span className="text-[#f472b6] font-bold"> full-scale game development</span>, 
                   where I apply these same principles of computational aesthetics and real-time interaction to build immersive, performant worlds from the ground up.
@@ -153,9 +154,21 @@ export default function Home() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-1 bg-[#1a1a1a] border border-[#1a1a1a]">
                 {[
-                  { icon: <Layout size={40} />, title: "Interface Design", body: "Crafting clean layouts that prioritize user journey and visual harmony." },
-                  { icon: <Cpu size={40} />, title: "Creative Coding", body: "Using Framer Motion and GSAP to build high-end, expressive web interactions." },
-                  { icon: <Code size={40} />, title: "Web Architecture", body: "Scalable, performant frontend structures built with Next.js and TypeScript." }
+                  { 
+                    icon: <Cpu size={40} />, 
+                    title: "Visual Systems", 
+                    body: "Implementing the logic behind particle systems, physics, and fluid interactions." 
+                  },
+                  { 
+                    icon: <Zap size={40} />, 
+                    title: "Kinetic Implementation", 
+                    body: "Engineering high-performance motion using WebGL and GSAP to translate concepts into tactile realities." 
+                  },
+                  { 
+                    icon: <Code size={40} />, 
+                    title: "Web Architecture", 
+                    body: "Scalable, performant frontend structures built with Next.js and TypeScript." 
+                  }
                 ].map((item, idx) => (
                   <div key={idx} className="bg-black p-10 flex flex-col gap-6 group transition-colors relative overflow-hidden">
                     <div className="text-[#f472b6]">{item.icon}</div>
@@ -223,7 +236,7 @@ export default function Home() {
                     className="mt-12 flex items-center justify-center gap-4 text-[#f472b6] bg-[#f472b6]/5 py-4 border border-[#f472b6]/20"
                   >
                     <CheckCircle2 size={20} />
-                    <span className="text-xs uppercase tracking-[0.5em] font-bold">Mission Complete: Full Portfolio Unlocked</span>
+                    <span className="text-xs uppercase tracking-[0.5em] font-bold">Mission Complete: Full Portfolio Unlocked.</span>
                   </motion.div>
                 )}
               </AnimatePresence>
