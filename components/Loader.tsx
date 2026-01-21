@@ -26,7 +26,7 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
       className="fixed inset-0 bg-black z-200 flex flex-col items-center justify-center p-4"
     >
       <div className="w-full max-w-sm">
-        <div className="flex justify-between mb-4 font-mono text-[15px] tracking-[0.3em] text-[#f472b6]">
+      <div className="flex justify-between mb-4 font-mono text-[15px] tracking-[0.3em] text-[#f472b6]">
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
