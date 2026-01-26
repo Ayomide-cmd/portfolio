@@ -6,7 +6,7 @@ import { Github, ExternalLink, CheckCircle2 } from "lucide-react";
 export interface ProjectProps {
   title: string;
   desc: string;
-  stack: string[];
+  stack?: string[];
   github: string;
   live: string;
   index: number;
@@ -82,7 +82,7 @@ export default function ProjectCard({
 
       <div className="relative z-10">
         <div className="flex flex-wrap gap-2">
-          {stack.map((tech) => (
+          {stack?.map((tech) => (
             <span
               key={tech}
               className="text-[8px] border border-white/5 px-2 py-1 text-gray-600 uppercase tracking-widest"
@@ -102,4 +102,4 @@ export default function ProjectCard({
       )}
     </motion.div>
   );
-} 
+}

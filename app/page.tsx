@@ -1,11 +1,12 @@
-"use client";
+ "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Typewriter from 'typewriter-effect';
 import Loader from "../components/Loader";
 import BentoCard from "../components/BentoCard";
 import ProjectCard from "../components/ProjectCard";
+import { Transition } from "framer-motion";
 import { 
   Github, 
   Linkedin, 
@@ -22,53 +23,74 @@ import {
   Target,
   CheckCircle2,
   AlertCircle,
-  Mail
+  Mail,
+  ChevronDown
 } from "lucide-react";
+
+const UNLOCK_TRANSITION = { 
+  duration: 0.8, 
+  ease: [0.16, 1, 0.3, 1] 
+} as const; 
+
+const DOODLE_TRANSITION = { 
+  duration: 1, 
+  ease: "easeInOut" 
+} as const; 
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
   const [exploredProjects, setExploredProjects] = useState<string[]>([]);
   const [showNudge, setShowNudge] = useState(false);
-
-  const doodleTransition = { duration: 1, ease: "easeInOut" } as const;
   
-  const projects = [
-    {
-      title: "Taweret",
-      desc: "A healthcare charity platform focused on pediatric oncology. I utilized Framer Motion to create empathetic, fluid transitions that streamline donor-patient transparency.",
-      stack: ["Next.js", "TypeScript", "Framer Motion"],
-      github: "https://github.com/Ayomide-cmd",
-      live: "https://taweret.vercel.app/"
-    },
-    {
-      title: "Cakely",
-      desc: "Full-stack e-commerce ordering system using the MERN-lite stack (React, Node.js, Express). Integrated Redux for advanced state management and deployed a cross-platform architecture using Render and Vercel. Solved complex deployment challenges involving CORS and environment-specific API routing.",
-      stack: ["Redux Toolkit", "Node JS", "CORS", "React Router"],
-      github: "https://github.com/Ayomide-cmd/cakely",
-      live: "https://cakely-amber.vercel.app"
-    },
-    {
+  const emphasisElements = useRef<Set<HTMLElement>>(new Set());
+  const setEmphasisRef = useCallback((node: HTMLElement | null) => {
+    if (node) {
+      emphasisElements.current.add(node);
+    }
+  }, []);
+
+  const flagshipProjects = [
+     {
       title: "Poppa Vitamins",
-      desc: "Modern e-commerce experience for health supplements. I leveraged GSAP to engineer high-performance, complex scroll-triggered animations and fluid product interactions.",
-      stack: ["React", "E-commerce", "GSAP", "Tailwind"],
+      desc: "UI-focused e-commerce prototype built with React and GSAP, emphasizing smooth scroll-based animations and interactive product sections. Designed to explore motion as a UX tool while maintaining responsive layouts and performance-conscious animation patterns.",
+      stack: ["React", "E-commerce", "GSAP", "Responsive Design"],
       github: "https://github.com/Ayomide-cmd",
       live: "https://poppa-vitamins-web.vercel.app/"
     },
     {
+      title: "Cakely",
+      desc: "Frontend-focused e-commerce product built with React, Redux Toolkit, and a Node.js/Express API. Designed core ordering and cart flows, managed global state, and handled cross-origin client–server communication. Deployed frontend and backend separately with production environment configuration.",
+      stack: ["Redux Toolkit", "Express.js", "CORS", "Rest API"],
+      github: "https://github.com/Ayomide-cmd/cakely",
+      live: "https://cakely-amber.vercel.app"
+    },
+    {
+      title: "Taweret",
+      desc: "Content-driven nonprofit website built with React and modern frontend tooling. Focused on semantic markup, responsive layouts, and component reuse, with motion-enhanced interactions to improve usability without sacrificing performance.",
+      stack: ["Next.js", "TypeScript", "Framer Motion"],
+      github: "https://github.com/Ayomide-cmd",
+      live: "https://taweret.vercel.app/"
+    }
+  ];
+
+  const supportingProjects = [
+    {
       title: "Steflix",
-      desc: "High-performance movie streaming interface using TMDB API. Features complex slider mechanics and custom video player states.",
+      desc: "Movie streaming interface built with React and Redux, consuming the TMDB API. Implemented reusable content sliders, asynchronous data fetching, and UI state handling for loading and error scenarios.",
       stack: ["React", "Redux", "SASS", "API Integration"],
       github: "https://github.com/Ayomide-cmd",
       live: "https://steflix-eight.vercel.app/"
     },
     {
       title: "Peach Jump",
-      desc: "A physics-based vanilla JavaScript game. Built to demonstrate mastery over the DOM and collision detection algorithms.",
+      desc: "Physics-based browser game built with vanilla JavaScript and HTML5 Canvas. Implements collision detection, dynamic physics interactions, and responsive DOM management to create an engaging interactive experience.",
       stack: ["JavaScript", "HTML5 Canvas", "Game Logic"],
       github: "https://github.com/Ayomide-cmd/PeachJump",
       live: "https://peach-jump.vercel.app/"
     }
   ];
+
+  const allProjects = [...flagshipProjects, ...supportingProjects];
 
   const handleExplore = (title: string) => {
     if (!exploredProjects.includes(title)) {
@@ -76,7 +98,28 @@ export default function Home() {
     }
   };
 
-  const isMissionComplete = exploredProjects.length === projects.length;
+  const isFlagshipComplete = flagshipProjects.every(p => exploredProjects.includes(p.title));
+  const isMissionComplete = exploredProjects.length === allProjects.length;
+
+  useEffect(() => {
+    if (loading || emphasisElements.current.size === 0) return;
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("text-pink-500");
+          } else {
+            entry.target.classList.remove("text-pink-500");
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    emphasisElements.current.forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, [loading]);
 
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden font-mono">
@@ -112,44 +155,76 @@ export default function Home() {
                 <h2 className="text-6xl md:text-7xl font-handwriting text-[#f472b6] relative z-10">
                   What I Do
                 </h2>
-                <svg className="absolute -inset-4 w-[120%] h-[140%] text-[#f472b6]/30 pointer-events-none" viewBox="0 0 200 100">
+
+                <svg
+                  className="absolute -inset-4 w-[120%] h-[140%] text-[#f472b6]/30 pointer-events-none"
+                  viewBox="0 0 200 100"
+                >
                   <motion.path
                     d="M20,50 Q25,10 100,15 Q175,20 180,50 Q175,90 100,85 Q25,80 20,50"
-                    fill="transparent" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-                    initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={doodleTransition}
+                    fill="transparent"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    initial={{ pathLength: 0 }}
+                    whileInView={{ pathLength: 1 }}
+                    viewport={{ once: true }}
+                    transition={DOODLE_TRANSITION}
                   />
                 </svg>
               </div>
 
               <div className="max-w-4xl mb-20 relative">
-                <p className="text-xl md:text-2xl leading-relaxed text-gray-300 font-light relative z-10">
-                 My toolkit isn't built on layouts, but on 
-                  <span className="text-[#f472b6] font-bold"> WebGL</span>, 
-                  <span className="text-[#f472b6] font-bold"> physics libraries</span>, and 
-                  <span className="text-[#f472b6] font-bold"> optimized frontend architecture</span>. 
-                  I enjoy writing code that transforms static pages into 
-                  <span className="text-[#f472b6] font-bold italic"> dynamic, tactile experiences</span>. 
-                  <br /><br />
-                  My work is a continuous bridge toward 
-                  <span className="text-[#f472b6] font-bold"> full-scale game development</span>, 
-                  where I apply these same principles of computational aesthetics and real-time interaction to build immersive, performant worlds from the ground up.
-                </p>
-
-                <svg className="absolute -bottom-2 right-0 w-48 h-8 text-[#f472b6]" viewBox="0 0 200 40">
-                  <motion.path
-                    d="M10,20 Q50,10 100,20 T190,20"
-                    fill="transparent" stroke="currentColor" strokeWidth="3" strokeLinecap="round"
-                    initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ ...doodleTransition, delay: 0.5 }}
-                  />
-                </svg>
-
-                <motion.div 
-                  className="absolute -right-8 top-0 text-[#f472b6]/30"
-                  animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                >
-                  <Sparkles size={48} />
-                </motion.div>
+              <p className="text-xl md:text-2xl leading-relaxed text-gray-300 font-light relative z-10">
+  I am a frontend developer who pushes the web beyond static interfaces by combining{' '}
+  <motion.span 
+    initial={{ color: "rgb(209, 213, 219)" }} 
+    whileInView={{ color: "#f472b6" }} 
+    viewport={{ amount: 1, margin: "0px 0px -10% 0px" }}
+    transition={{ duration: 0.7 }}
+    className="font-bold inline"
+  >
+    WebGL
+  </motion.span>,{' '}
+  <motion.span 
+    initial={{ color: "rgb(209, 213, 219)" }} 
+    whileInView={{ color: "#f472b6" }} 
+    viewport={{ amount: 1, margin: "0px 0px -10% 0px" }}
+    transition={{ duration: 0.7 }}
+    className="font-bold inline"
+  >
+    physics libraries
+  </motion.span>, and{' '}
+  <motion.span 
+    initial={{ color: "rgb(209, 213, 219)" }} 
+    whileInView={{ color: "#f472b6" }} 
+    viewport={{ amount: 1, margin: "0px 0px -10% 0px" }}
+    transition={{ duration: 0.7 }}
+    className="font-bold inline"
+  >
+    performance-driven architecture
+  </motion.span>. I enjoy writing code that transforms static pages into{' '}
+  <motion.span 
+    initial={{ color: "rgb(209, 213, 219)" }} 
+    whileInView={{ color: "#f472b6" }} 
+    viewport={{ amount: 1, margin: "0px 0px -10% 0px" }}
+    transition={{ duration: 0.7 }}
+    className="font-bold italic inline"
+  >
+    dynamic, tactile experiences
+  </motion.span>.
+  <br /><br />
+  My work builds toward{' '}
+  <motion.span 
+    initial={{ color: "rgb(209, 213, 219)" }} 
+    whileInView={{ color: "#f472b6" }} 
+    viewport={{ amount: 1, margin: "0px 0px -10% 0px" }}
+    transition={{ duration: 0.7 }}
+    className="font-bold inline"
+  >
+    full-scale game development
+  </motion.span>, applying these principles of animation, interactivity, and real-time computation to craft immersive, high-performance experiences on the web.
+</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-1 bg-[#1a1a1a] border border-[#1a1a1a]">
@@ -186,7 +261,7 @@ export default function Home() {
               id="project-intel"
               className="mt-32 mb-32 relative"
               onViewportLeave={() => { if(!isMissionComplete) setShowNudge(true) }}
-            >
+            > 
               <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#1a1a1a] pb-8">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
@@ -195,7 +270,7 @@ export default function Home() {
                   </div>
                   <h2 className="text-4xl font-bold uppercase tracking-tighter text-white">Project Intel</h2>
                   <p className="text-gray-500 text-xs uppercase mt-2 tracking-widest max-w-md leading-relaxed">
-                    Access all fragments to complete the briefing. These are the projects I have worked on.
+                    Access flagship fragments to unlock the full supporting briefing.
                   </p>
                 </div>
 
@@ -204,29 +279,66 @@ export default function Home() {
                     <span className={isMissionComplete ? "text-[#f472b6]" : "text-gray-500"}>
                       {isMissionComplete ? "Mission Successful" : "Data Collected"}
                     </span>
-                    <span className="text-[#f472b6]">{exploredProjects.length}/{projects.length}</span>
+                    <span className="text-[#f472b6]">{exploredProjects.length}/{allProjects.length}</span>
                   </div>
                   <div className="h-1 w-full bg-[#1a1a1a]">
                     <motion.div 
                       className="h-full bg-[#f472b6]"
                       initial={{ width: 0 }}
-                      animate={{ width: `${(exploredProjects.length / projects.length) * 100}%` }}
+                      animate={{ width: `${(exploredProjects.length / allProjects.length) * 100}%` }}
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1 bg-[#1a1a1a] border border-[#1a1a1a]">
-                {projects.map((p, i) => (
-                  <ProjectCard 
-                    key={p.title} 
-                    {...p} 
-                    index={i} 
-                    isExplored={exploredProjects.includes(p.title)}
-                    onExplore={() => handleExplore(p.title)} 
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 bg-[#1a1a1a] border border-[#1a1a1a]">
+                {flagshipProjects.map((p, i) => (
+                  <div key={p.title} className="group/flagship relative overflow-hidden">
+                    <ProjectCard 
+                      {...p} 
+                      index={i} 
+                      isExplored={exploredProjects.includes(p.title)}
+                      onExplore={() => handleExplore(p.title)} 
+                    />
+                    {!isFlagshipComplete && (
+                       <div className="absolute inset-0 pointer-events-none border border-[#f472b6]/0 group-hover/flagship:border-[#f472b6]/20 transition-colors duration-500 z-20" />
+                    )}
+                  </div>
                 ))}
               </div>
+
+              <AnimatePresence>
+                {isFlagshipComplete && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={UNLOCK_TRANSITION}
+                    className="overflow-hidden"
+                  >
+                    <div className="flex items-center gap-4 py-12">
+                      <div className="h-px flex-1 bg-[#1a1a1a]" />
+                      <div className="flex items-center gap-2 text-[#f472b6]">
+                        <ChevronDown size={16} className="animate-bounce" />
+                        <span className="text-[10px] uppercase tracking-[0.4em] font-bold">Supporting Intel Unlocked</span>
+                      </div>
+                      <div className="h-px flex-1 bg-[#1a1a1a]" />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-1 bg-[#1a1a1a] border border-[#1a1a1a]">
+                      {supportingProjects.map((p, i) => (
+                        <ProjectCard 
+                          key={p.title} 
+                          {...p} 
+                          index={i + 3} 
+                          isExplored={exploredProjects.includes(p.title)}
+                          onExplore={() => handleExplore(p.title)} 
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <AnimatePresence>
                 {isMissionComplete && (
@@ -272,7 +384,7 @@ export default function Home() {
                   { name: "React JS", icon: <Cpu size={24} /> },
                   { name: "Git | Github", icon: <Github size={24} /> }
                 ].map((tech) => (
-                  <div key={tech.name} className="bg-black p-8 flex flex-col items-center justify-center gap-4 group transition-colors min-h-40">
+                  <div key={tech.name} className="bg-black p-8 flex flex-col items-center justify-center gap-4 group transition-colors min-h-40" aria-label={`Technology: ${tech.name}`}>
                     <div className="text-gray-500 group-hover:text-[#f472b6] transition-all transform group-hover:scale-110">
                       {tech.icon}
                     </div>
@@ -297,7 +409,7 @@ export default function Home() {
               <BentoCard className="col-span-12 md:col-span-6 flex flex-col justify-between">
                 <div className="flex justify-between items-start">
                   <Award size={20} className="text-[#f472b6]" />
-                  <a href="https://certificate.terrahq.co/188448ADDNB2MJX290" target="_blank" rel="noopener noreferrer">
+                  <a href="https://certificate.terrahq.co/188448ADDNB2MJX290" target="_blank" rel="noopener noreferrer" aria-label="View Terra Learning Certificate">
                     <ExternalLink size={14} className="text-gray-600 hover:text-white transition" />
                   </a>
                 </div>
@@ -308,14 +420,14 @@ export default function Home() {
               </BentoCard>
 
               <BentoCard className="col-span-12 flex justify-around items-center py-12">
-                 <a href="https://github.com/Ayomide-cmd" target="_blank" className="hover:text-[#f472b6] transition-all text-white flex flex-col items-center gap-2">
-                   <Github size={28} />
-                   <span className="text-[10px] uppercase tracking-[0.4em]">Github</span>
-                 </a>
-                 <a href="https://linkedin.com" target="_blank" className="hover:text-[#f472b6] transition-all text-white flex flex-col items-center gap-2">
-                   <Linkedin size={28} />
-                   <span className="text-[10px] uppercase tracking-[0.4em]">Linkedin</span>
-                 </a>
+                <a href="https://github.com/Ayomide-cmd" target="_blank" className="hover:text-[#f472b6] transition-all text-white flex flex-col items-center gap-2">
+                  <Github size={28} />
+                  <span className="text-[10px] uppercase tracking-[0.4em]">Github</span>
+                </a>
+                <a href="https://linkedin.com" target="_blank" className="hover:text-[#f472b6] transition-all text-white flex flex-col items-center gap-2">
+                  <Linkedin size={28} />
+                  <span className="text-[10px] uppercase tracking-[0.4em]">Linkedin</span>
+                </a>
               </BentoCard>
             </div>
 
@@ -375,14 +487,8 @@ function ScrollIndicator() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const threshold = 100;
-      if (window.scrollY > threshold) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
+      setIsVisible(window.scrollY <= 100);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -407,16 +513,7 @@ function ScrollIndicator() {
 
 function SendIcon({ size }: { size: number }) {
   return (
-    <svg 
-      width={size} 
-      height={size} 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="1" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-    >
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
       <line x1="22" y1="2" x2="11" y2="13"></line>
       <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
     </svg>
